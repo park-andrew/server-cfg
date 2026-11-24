@@ -9,13 +9,13 @@
 
   networking.hostName = "bigbug-games";
 
-  # Pick ONE bootloader to match the machine.
-  # UEFI:
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  # Legacy BIOS (comment out the two lines above and use this instead):
-  # boot.loader.grub.enable = true;
-  # boot.loader.grub.device = "/dev/sda";
+  # GRUB boots on both Proxmox BIOS types: SeaBIOS (legacy) and OVMF (UEFI).
+  # The install disk is picked up from disk.nix (disko sets boot.loader.grub.devices).
+  boot.loader.grub = {
+    enable = true;
+    efiSupport = true;
+    efiInstallAsRemovable = true; # no NVRAM entries needed, so the BIOS type can change later
+  };
 
   # Static IP. Matches any wired interface (Proxmox VirtIO is usually ens18).
   # CHECK the /24 subnet, gateway and DNS against your network before deploying.

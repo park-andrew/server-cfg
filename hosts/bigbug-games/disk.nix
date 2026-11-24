@@ -9,6 +9,13 @@
     content = {
       type = "gpt";
       partitions = {
+        # Where GRUB lives when booting with legacy BIOS (SeaBIOS).
+        boot = {
+          size = "1M";
+          type = "EF02";
+          priority = 1;
+        };
+        # Used when booting with UEFI (OVMF); also holds the kernels.
         ESP = {
           size = "512M";
           type = "EF00";
