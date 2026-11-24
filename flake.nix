@@ -28,10 +28,10 @@
         };
       };
 
-      formatter.${system} = pkgs.nixfmt-rfc-style;
+      formatter.${system} = pkgs.nixfmt;
 
       devShells.${system}.default = pkgs.mkShell {
-        packages = with pkgs; [ nixfmt-rfc-style nil ];
+        packages = with pkgs; [ nixfmt nil ];
       };
     };
 }
