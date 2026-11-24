@@ -4,6 +4,16 @@
 #     "mc"    = can edit files in /srv/minecraft (only exists on hosts that import minecraft.nix)
 { pkgs, ... }:
 {
+  # Immutable users: accounts and groups come only from this config. useradd/passwd changes
+  # are reverted on every rebuild, and accounts removed from here are deleted.
+  users.mutableUsers = false;
+
+  # Root password for the Proxmox console, in case SSH breaks. The hash lives on the server,
+  # not in this public repo. Create it once (as root):
+  #   nix run nixpkgs#mkpasswd -- -m yescrypt > /var/lib/root-password && chmod 600 /var/lib/root-password
+  # Until that file exists, root login is locked.
+  users.users.root.hashedPasswordFile = "/var/lib/root-password";
+
   users.users.andrew = {
     isNormalUser = true;
     extraGroups = [ "wheel" "mc" ];
