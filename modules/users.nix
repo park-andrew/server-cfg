@@ -8,11 +8,11 @@
   # are reverted on every rebuild, and accounts removed from here are deleted.
   users.mutableUsers = false;
 
-  # Root password for the Proxmox console, in case SSH breaks. The hash lives on the server,
-  # not in this public repo. Create it once (as root):
-  #   nix run nixpkgs#mkpasswd -- -m yescrypt > /var/lib/root-password && chmod 600 /var/lib/root-password
-  # Until that file exists, root login is locked.
-  users.users.root.hashedPasswordFile = "/var/lib/root-password";
+  # Root password for the Proxmox console, in case SSH breaks (SSH itself refuses root).
+  # The password is in 1Password: "bigbug-games root" (Private vault). Random 40 chars + yescrypt,
+  # so publishing the hash is safe. To change it: generate a new one, then
+  #   mkpasswd -m yescrypt   and paste the result here.
+  users.users.root.hashedPassword = "$y$j9T$M9WalbrGAakIhKJ/WNTIL/$6cvehacn1M3amaKAcPxDW3wNZuhDD2903zfoqIW06QA";
 
   users.users.andrew = {
     isNormalUser = true;
