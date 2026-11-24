@@ -48,7 +48,14 @@ in
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [ 22 ];
+    # Tailscale: direct peer-to-peer connections, and trust traffic from the tailnet.
+    allowedUDPPorts = [ config.services.tailscale.port ];
+    trustedInterfaces = [ "tailscale0" ];
   };
+
+  # Tailscale VPN. One-time login after the first deploy:  sudo tailscale up
+  # (The auth key is not stored here: this repo is public.)
+  services.tailscale.enable = true;
 
   security.sudo.wheelNeedsPassword = false;
 
