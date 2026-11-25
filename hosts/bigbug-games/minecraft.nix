@@ -4,7 +4,8 @@
 let
   mcctl = pkgs.writeShellApplication {
     name = "mcctl";
-    runtimeInputs = with pkgs; [ tmux coreutils gnutar gzip gnugrep jdk21_headless ];
+    # Also the environment the servers run in, so include what start.sh/run.sh scripts expect.
+    runtimeInputs = with pkgs; [ bash tmux coreutils findutils gnused gawk gnutar gzip gnugrep unzip jdk21_headless ];
     text = builtins.readFile ./mcctl.sh;
   };
 in
@@ -53,7 +54,8 @@ in
 
   programs.bash.interactiveShellInit = builtins.readFile ./mcctl-completion.bash;
 
-  # Starts servers marked with `mcctl autostart <name> on` at boot; stops all servers cleanly at shutdown.
+  # Owns the tmux server that every Minecraft server runs in (including ones started by hand
+  # with mcctl), so they are all stopped cleanly at shutdown. Also starts autostart servers.
   systemd.services.minecraft = {
     description = "Minecraft servers (autostart)";
     wantedBy = [ "multi-user.target" ];
@@ -73,5 +75,8 @@ in
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ 25565 ];
+  # One port per server: set server-port in each server.properties to 25565, 25566, ...
+  networking.firewall.allowedTCPPortRanges = [
+    { from = 25565; to = 25575; }
+  ];
 }

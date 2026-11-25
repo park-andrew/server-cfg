@@ -99,9 +99,13 @@ cmd_status() {
   if [ -f "$ROOT/$1/.autostart" ]; then echo "autostart: on"; else echo "autostart: off"; fi
 }
 
+tmux_up() { t list-sessions >/dev/null 2>&1; }
+
 cmd_start() {
   need_server "$1"
   running "$1" && die "'$1' is already running (attach: mcctl console $1)"
+  # Servers must run inside the tmux server owned by minecraft.service, so shutdown stops them cleanly.
+  tmux_up || die "the minecraft service is not running; start it with: sudo systemctl start minecraft"
   local f
   f=$(launcher "$1") || die "no start.sh or run.sh in $ROOT/$1"
   t new-session -d -s "$1" -c "$ROOT/$1" "bash ./$f"
@@ -213,6 +217,8 @@ cmd_stop_all() {
 
 cmd_boot() {
   local s
+  # Start the shared tmux server and keep it alive even with no servers running.
+  t start-server \; set-option -g exit-empty off
   while read -r s; do
     [ -f "$ROOT/$s/.autostart" ] || continue
     (cmd_start "$s") || echo "failed to start $s" >&2
