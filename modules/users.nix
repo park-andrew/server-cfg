@@ -25,6 +25,16 @@
     ];
   };
 
+  # Keys copied from github:alx-alexpark/server-cfg (modules/base.nix): hardware security keys.
+  users.users.alex = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" "mc" ];
+    openssh.authorizedKeys.keys = [
+      "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIAKWfF9y67GxL3jIFcQfWvTOBOyIPtreimhYpxTHJ3CcAAAABHNzaDo= a@susbook.local"
+      "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAINlmapiWuvpREQGuJJBP/Pv2N3Tt9zIhXIkcAlFt0ZsnAAAABHNzaDo= a@susbook.local"
+    ];
+  };
+
   # Example of a non-admin who can manage Minecraft files:
   # users.users.friend = {
   #   isNormalUser = true;
