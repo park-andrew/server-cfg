@@ -9,10 +9,10 @@
   users.mutableUsers = false;
 
   # Root password for the Proxmox console, in case SSH breaks (SSH itself refuses root).
-  # The password is in 1Password: "bigbug-games root" (Private vault). Random 40 chars + yescrypt,
-  # so publishing the hash is safe. To change it: generate a new one, then
-  #   mkpasswd -m yescrypt   and paste the result here.
-  users.users.root.hashedPassword = "$y$j9T$M9WalbrGAakIhKJ/WNTIL/$6cvehacn1M3amaKAcPxDW3wNZuhDD2903zfoqIW06QA";
+  # The password is a random 5-word passphrase, kept in 1Password as "bigbug-games root" (Private
+  # vault); with yescrypt, publishing the hash is safe. To change it: pick a new random passphrase,
+  # then run  mkpasswd -m yescrypt  and paste the result here.
+  users.users.root.hashedPassword = "$y$j9T$I6/iKS3LYYrFujlvJenoj.$5Ev9TWTp.kwvgz9J8PX/kBl43qGeMxqfFqAvvsvYA90";
 
   users.users.andrew = {
     isNormalUser = true;
