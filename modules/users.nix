@@ -14,10 +14,12 @@
   # then run  mkpasswd -m yescrypt  and paste the result here.
   users.users.root.hashedPassword = "$y$j9T$I6/iKS3LYYrFujlvJenoj.$5Ev9TWTp.kwvgz9J8PX/kBl43qGeMxqfFqAvvsvYA90";
 
+  programs.fish.enable = true;
+
   users.users.andrew = {
     isNormalUser = true;
     extraGroups = [ "wheel" "mc" ];
-    shell = pkgs.bash;
+    shell = pkgs.fish;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC+m4orHAiFDRtD3pSKjDG6FK0xvWFT27wf+upDVltJd andew@sus"
     ];

@@ -53,6 +53,14 @@ in
   environment.etc."minecraft/java8".source = pkgs.jdk8_headless;
 
   programs.bash.interactiveShellInit = builtins.readFile ./mcctl-completion.bash;
+  programs.fish.interactiveShellInit = ''
+    # Tab completion for mcctl: subcommands, then server names, then on/off for autostart.
+    complete -c mcctl -f
+    complete -c mcctl -n "test (count (commandline -opc)) -eq 1" \
+      -a "list status start stop restart console cmd logs new autostart backup stop-all help"
+    complete -c mcctl -n "test (count (commandline -opc)) -eq 2" -a "(ls /srv/minecraft 2>/dev/null)"
+    complete -c mcctl -n "test (count (commandline -opc)) -eq 3; and __fish_seen_subcommand_from autostart" -a "on off"
+  '';
 
   # Owns the tmux server that every Minecraft server runs in (including ones started by hand
   # with mcctl), so they are all stopped cleanly at shutdown. Also starts autostart servers.
