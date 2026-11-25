@@ -28,6 +28,8 @@ mcctl: manage Minecraft servers in /srv/minecraft/<name>/
   mcctl new      <name>          create a server folder with a start.sh template
   mcctl autostart <name> on|off  start this server at boot
   mcctl backup   <name>          tar.gz the server folder into /srv/minecraft/.backups
+  mcctl fix-perms <name>         make every file owned by mc and group-writable
+                                 (also done automatically by start)
   mcctl stop-all
 
 A server is started with start.sh in its folder, or run.sh if there is no start.sh
@@ -101,6 +103,14 @@ cmd_status() {
 
 tmux_up() { t list-sessions >/dev/null 2>&1; }
 
+# Files unzipped or copied in by a person keep their owner/modes; hand them back to mc.
+fix_perms() { /run/wrappers/bin/sudo -n /run/current-system/sw/bin/mcctl-fixperms "$1"; }
+
+cmd_fix_perms() {
+  need_server "$1"
+  fix_perms "$1"
+}
+
 cmd_start() {
   need_server "$1"
   running "$1" && die "'$1' is already running (attach: mcctl console $1)"
@@ -108,6 +118,7 @@ cmd_start() {
   tmux_up || die "the minecraft service is not running; start it with: sudo systemctl start minecraft"
   local f
   f=$(launcher "$1") || die "no start.sh or run.sh in $ROOT/$1"
+  fix_perms "$1" >/dev/null || echo "warning: could not fix permissions in $ROOT/$1" >&2
   t new-session -d -s "$1" -c "$ROOT/$1" "bash ./$f"
   sleep 3
   if running "$1"; then
@@ -243,6 +254,7 @@ case "$sub" in
   new) cmd_new "${1:-}" ;;
   autostart) cmd_autostart "${1:-}" "${2:-}" ;;
   backup) cmd_backup "${1:-}" ;;
+  fix-perms | fixperms) cmd_fix_perms "${1:-}" ;;
   stop-all) cmd_stop_all ;;
   boot) cmd_boot ;;
   help | -h | --help) usage ;;

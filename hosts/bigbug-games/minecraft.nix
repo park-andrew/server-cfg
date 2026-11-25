@@ -8,6 +8,14 @@ let
     runtimeInputs = with pkgs; [ bash tmux coreutils findutils gnused gawk gnutar gzip gnugrep unzip jdk21_headless ];
     text = builtins.readFile ./mcctl.sh;
   };
+
+  # Root helper behind `mcctl fix-perms`: files unzipped or copied in by a person keep their
+  # own owner and modes, which the server (running as mc) then can't write to.
+  mcctl-fixperms = pkgs.writeShellApplication {
+    name = "mcctl-fixperms";
+    runtimeInputs = with pkgs; [ coreutils findutils ];
+    text = builtins.readFile ./mcctl-fixperms.sh;
+  };
 in
 {
   # Service account: no password and no SSH key, so nobody logs in as it directly.
@@ -28,7 +36,7 @@ in
     "A+ /srv/minecraft - - - - default:user::rwx,default:group::rwx,default:other::---"
   ];
 
-  # Members of mc may run mcctl as mc without a password, and nothing else.
+  # Members of mc may run mcctl as mc, and the fix-perms helper as root, without a password.
   security.sudo.extraRules = [
     {
       groups = [ "mc" ];
@@ -40,10 +48,21 @@ in
         }
       ];
     }
+    {
+      groups = [ "mc" ];
+      runAs = "root";
+      commands = [
+        {
+          command = "/run/current-system/sw/bin/mcctl-fixperms";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
   ];
 
   environment.systemPackages = [
     mcctl
+    mcctl-fixperms
     pkgs.jdk21_headless
     pkgs.unzip
   ];
@@ -57,7 +76,7 @@ in
     # Tab completion for mcctl: subcommands, then server names, then on/off for autostart.
     complete -c mcctl -f
     complete -c mcctl -n "test (count (commandline -opc)) -eq 1" \
-      -a "list status start stop restart console cmd logs new autostart backup stop-all help"
+      -a "list status start stop restart console cmd logs new autostart backup fix-perms stop-all help"
     complete -c mcctl -n "test (count (commandline -opc)) -eq 2" -a "(ls /srv/minecraft 2>/dev/null)"
     complete -c mcctl -n "test (count (commandline -opc)) -eq 3; and __fish_seen_subcommand_from autostart" -a "on off"
   '';
