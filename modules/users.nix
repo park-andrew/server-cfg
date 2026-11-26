@@ -35,6 +35,22 @@
     ];
   };
 
+  users.users.keaton = {
+    isNormalUser = true;
+    extraGroups = [ "mc" ];
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOjzQuYifybb86HagJxZEHeTTCxnb1pRzTlmxpY/d/ST arch@PiclOS-1000"
+    ];
+  };
+
+  users.users.adil = {
+    isNormalUser = true;
+    extraGroups = [ "mc" ];
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA0Qa7CYJgqHd8uzf4wWYMdQrrIE3fbqDFn4GfojeZoS adil raza@Adil"
+    ];
+  };
+
   # Example of a non-admin who can manage Minecraft files:
   # users.users.friend = {
   #   isNormalUser = true;
